@@ -54,7 +54,7 @@ print(f"{incoming.count():,} reports in the two files")
 # MAGIC %sql
 # MAGIC -- 3. New reports go in, changed reports are updated, unchanged ones are not touched
 # MAGIC MERGE INTO workspace.triage.reports AS t
-# MAGIC MERGE USING incoming AS s
+# MAGIC USING incoming AS s
 # MAGIC ON t.report_id = s.report_id
 # MAGIC WHEN MATCHED AND t.row_hash <> s.row_hash THEN UPDATE SET *
 # MAGIC WHEN NOT MATCHED THEN INSERT *
