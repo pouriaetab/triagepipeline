@@ -54,7 +54,7 @@ print(f"{incoming.count():,} reports in the two files")
 # MAGIC %sql
 # MAGIC -- 3. New reports go in, changed reports are updated, unchanged ones are not touched
 # MAGIC MERGE INTO workspace.triage.reports AS t
-# MAGIC MERGE USING incoming As s
+# MAGIC MERGE USING incoming AS s
 # MAGIC ON t.report_id = s.report_id
 # MAGIC WHEN MATCHED AND t.row_hash <> s.row_hash THEN UPDATE SET *
 # MAGIC WHEN NOT MATCHED THEN INSERT *
@@ -77,5 +77,5 @@ print(f"version {last['version']} ({last['operation']}): "
       f"{m.get('numTargetRowsInserted', 0)} new, {m.get('numTargetRowsUpdated', 0)} changed")
 display(spark.sql(f"""
     SELECT _change_type, report_id, report_version, company, incident_month, city
-    FROM table_change('{TABLE}', {last['version']})
+    FROM table_changes('{TABLE}', {last['version']})
     WHERE _change_type IN ('insert', 'update_postimage')"""))
