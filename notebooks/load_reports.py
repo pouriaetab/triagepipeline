@@ -16,6 +16,8 @@ from pyspark.sql import functions as F
 
 VOLUME = "/Volumes/workspace/triage/nhtsa"
 TABLE = "workspace.triage.reports"
+AIRBAG = ["SV Any Air Bags Deployed?", "Any Air Bags Deployed?"] # old file, new file
+
 
 def read_file(name: str):
     """One NHTSA file as a table: the six columns we use, a row fingerprint, the file name, the load time."""
@@ -27,6 +29,10 @@ def read_file(name: str):
         F.col("`Incident Date`").alias("incident_month"),
         F.col("City").alias("city"),
         F.col("Narrative").alias("narrative"),
+        F.col("`Incident Time (24:00)`").alias("incident_time"), # added in step4: needed to spot exact copies
+        F.col("`Highest Injury Severity Alleged`").alias("injury"), # added in step4: the severity comes from it
+        F.col("`Crash With`").alias("crash_with"), # added in step 4: a person outside a car raises S0 to S1
+        F.coalesce(*[F.col(f"`{c}`") for c in AIRBAG if c in df.columns]).alias("airbag"), # the two files name it differently
         F.expr("sha2(to_json(struct(*)), 256)").alias("row_hash"), # a change anywhere in the row changes the hash
         F.lit(name).alias("source_file"),
         F.current_timestamp().alias("loaded_at")
@@ -46,7 +52,8 @@ print(f"{incoming.count():,} reports in the two files")
 # MAGIC -- 2. The table: one row per NHTSA report. Created on the first run; later runs keep it.
 # MAGIC CREATE TABLE IF NOT EXISTS workspace.triage.reports (
 # MAGIC     report_id STRING, report_version INT, company STRING, incident_month STRING, city STRING,
-# MAGIC     narrative STRING, row_hash STRING, source_file STRING, loaded_at TIMESTAMP
+# MAGIC     narrative STRING, incident_time STRING, injury STRING, crash_with STRING, airbag STRING,
+# MAGIC     row_hash STRING, source_file STRING, loaded_at TIMESTAMP
 # MAGIC )   TBLPROPERTIES (delta.enableChangeDataFeed = true) -- remember every insert and update
 
 # COMMAND ----------
