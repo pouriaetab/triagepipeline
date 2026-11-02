@@ -33,6 +33,8 @@ def read_file(name: str):
         F.col("`Highest Injury Severity Alleged`").alias("injury"), # added in step4: the severity comes from it
         F.col("`Crash With`").alias("crash_with"), # added in step 4: a person outside a car raises S0 to S1
         F.coalesce(*[F.col(f"`{c}`") for c in AIRBAG if c in df.columns]).alias("airbag"), # the two files name it differently
+        F.col("`Same Incident ID`").alias("incident_id"), # NHTSA's own link between reports of one crash
+        F.col("VIN").alias("vin"), # which vehicle; two VINs in one crash = two vehicles
         F.expr("sha2(to_json(struct(*)), 256)").alias("row_hash"), # a change anywhere in the row changes the hash
         F.lit(name).alias("source_file"),
         F.current_timestamp().alias("loaded_at")
@@ -53,6 +55,7 @@ print(f"{incoming.count():,} reports in the two files")
 # MAGIC CREATE TABLE IF NOT EXISTS workspace.triage.reports (
 # MAGIC     report_id STRING, report_version INT, company STRING, incident_month STRING, city STRING,
 # MAGIC     narrative STRING, incident_time STRING, injury STRING, crash_with STRING, airbag STRING,
+# MAGIC     incident_id STRING, vin STRING,
 # MAGIC     row_hash STRING, source_file STRING, loaded_at TIMESTAMP
 # MAGIC )   TBLPROPERTIES (delta.enableChangeDataFeed = true) -- remember every insert and update
 
