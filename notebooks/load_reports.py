@@ -34,7 +34,7 @@ def read_file(name: str):
         F.col("`Crash With`").alias("crash_with"), # added in step 4: a person outside a car raises S0 to S1
         F.coalesce(*[F.col(f"`{c}`") for c in AIRBAG if c in df.columns]).alias("airbag"), # the two files name it differently
         F.col("`Same Incident ID`").alias("incident_id"), # NHTSA's own link between reports of one crash
-        F.col("VIN").alias("vin"), # which vehicle; two VINs in one crash = two vehicles
+        F.col("VIN").alias("vin"), # seperate vehicles: two VINs in one crash = two vehicles
         F.expr("sha2(to_json(struct(*)), 256)").alias("row_hash"), # a change anywhere in the row changes the hash
         F.lit(name).alias("source_file"),
         F.current_timestamp().alias("loaded_at")
