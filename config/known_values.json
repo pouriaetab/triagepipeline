@@ -1,0 +1,51 @@
+{
+ "Highest Injury Severity Alleged": [
+  "Fatality",
+  "Minor",
+  "Minor W/ Hospitalization",
+  "Minor W/O Hospitalization",
+  "Moderate",
+  "Moderate W/ Hospitalization",
+  "Moderate W/O Hospitalization",
+  "No Injured Reported",
+  "No Injuries Reported",
+  "Property Damage. No Injured Reported",
+  "Serious",
+  "Serious W/ Hospitalization",
+  "Unknown"
+ ],
+ "Crash With": [
+  "Animal",
+  "Bus",
+  "First Responder Vehicle",
+  "Heavy Truck",
+  "Motorcycle",
+  "Non-Motorist: Cyclist",
+  "Non-Motorist: Other",
+  "Non-Motorist: Pedestrian",
+  "Non-Motorist: Scooter - Skateboard",
+  "Other Fixed Object",
+  "Other, see Narrative",
+  "Passenger Car",
+  "Pickup Truck",
+  "Pole / Tree",
+  "SUV",
+  "Unknown",
+  "Van"
+ ],
+ "SV Any Air Bags Deployed?": [
+  "No",
+  "Unknown",
+  "Yes"
+ ],
+ "Any Air Bags Deployed?": [
+  "No Crash Partner, Unknown Subject Vehicle",
+  "No Subject Vehicle, No Crash Partner",
+  "No Subject Vehicle, Unknown Crash Partner",
+  "Not Applicable",
+  "Yes Crash Partner, No Subject Vehicle",
+  "Yes Subject Vehicle, No Crash Partner",
+  "Yes Subject Vehicle, Unknown Crash Partner",
+  "Yes Subject Vehicle, Yes Crash Partner"
+ ]
+}
