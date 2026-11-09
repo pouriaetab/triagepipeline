@@ -12,11 +12,11 @@ flowchart LR
   C --> D["4 · build_tickets<br/>DAT key, severity S0-S3"]
   D --> E["5 · link_crashes<br/>same crash, linked"]
   F["find_duplicates.py<br/>near-duplicate finder"] -.-> E
-  G["6 · spikes.py<br/>p-chart, 95% ranges"]
-  B -. "new values" .-> D
+  E --> G["6 · spikes.py + spike_report<br/>p-chart, 95% ranges"]
+    B -. "new values" .-> D
 ```
 
-Steps 1 and 2 run in a GitHub Codespace (Bash, Python); steps 3 to 5 run on Databricks (PySpark, SQL, Delta Lake); step 6 is a Python tool with a command line.
+Steps 1 and 2 run in a GitHub Codespace (Bash, Python); steps 3 to 5 run on Databricks (PySpark, SQL, Delta Lake); step 6 is a Python tool with a command line, and `notebooks/spike_report.py` runs it on Databricks.
 
 ## Steps
 
@@ -27,7 +27,7 @@ Steps 1 and 2 run in a GitHub Codespace (Bash, Python); steps 3 to 5 run on Data
 | 3 | `scripts/upload.sh`, `notebooks/load_reports.py` | Copies the files to a Databricks volume and MERGEs them into `workspace.triage.reports`: one row per report, only new or changed rows written (Change Data Feed on). | `tests/test_upload.py` (2) |
 | 4 | `notebooks/build_tickets.py` | Reads only what changed since its last run, gives each report a permanent DAT key, a severity S0 to S3 and a pointer for exact copies, and MERGEs into `workspace.triage.tickets`. A ticket with a value nobody has checked gets at least S1 and `severity_pending` until the value is on the list. | checks in the notebook |
 | 5 | `scripts/find_duplicates.py`, `notebooks/link_crashes.py` | Links tickets of the same crash: NHTSA's Same Incident ID first, then similar stories (TF-IDF, cut-off 0.9) in the same month and city; same minute = same crash, 1 to 10 minutes apart = a person decides. | `tests/test_find_duplicates.py` (6), checks in the notebook |
-| 6 | `scripts/spikes.py` | For every month and value of a column (what the AV hit), compares the share with the 12 months before (a p-chart). Above normal + 3 standard errors with at least 3 rows = a spike; a value never seen before = a new value, not a spike. Each flag gets a Wilson 95% range. | `tests/test_spikes.py` (7) |
+| 6 | `scripts/spikes.py`, `notebooks/spike_report.py` | For every month and value of a column (what the AV hit), compares the share with the 12 months before (a p-chart). Above normal + 3 standard errors with at least 3 rows = a spike; a value never seen before = a new value, not a spike. Each flag gets a Wilson 95% range. On Databricks the notebook runs it twice, counting tickets and counting crashes (step 5), and saves both in `workspace.triage.spikes`. | `tests/test_spikes.py` (7), checks in the notebook |
 
 <details>
 <summary><b>Why these numbers</b></summary>
